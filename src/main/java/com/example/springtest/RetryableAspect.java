@@ -37,24 +37,25 @@ public class RetryableAspect {
                 proceed = joinPoint.proceed();
                 // Success case
                 return proceed;
-            } catch (Exception exception) {
-                lazyException = exception;
-                if (instanceContains(exception, annotation.include())) {
+            } catch (Exception e) {
+                lazyException = e;
+                if (isAssignable(e, annotation.include())) {
                     if (annotation.printStackTrace()) {
-                        exception.printStackTrace();
+                        e.printStackTrace();
                     }
                     retryCount++;
                 } else {
-                    throw exception;
+                    throw e;
                 }
             }
         }
 
+        // @Retryable fail case
+
         Object target = joinPoint.getTarget();
-        Class<?> retryableMethodReturnType = reatryableMethod.getReturnType();
 
         // Find @Recover method (@Retryable return type == @Recover return type)
-        Method recoverMethod = findRecoverMethodWithSameReturnType(target, retryableMethodReturnType);
+        Method recoverMethod = findRecoverMethodWithSameReturnType(target, reatryableMethod.getReturnType());
 
         if (recoverMethod != null) {
             log.info("Recover start");
@@ -65,9 +66,9 @@ public class RetryableAspect {
         }
     }
 
-    private boolean instanceContains(Exception target, Class<? extends Exception>[] compareWiths) {
+    private boolean isAssignable(Exception target, Class<? extends Exception>[] compareWiths) {
         for (Class<? extends Exception> ex : compareWiths) {
-            if (target.getClass().isAssignableFrom(ex)) {
+            if (ex.isAssignableFrom(target.getClass())) {
                 return true;
             }
         }

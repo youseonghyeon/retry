@@ -14,7 +14,7 @@ public @interface Retryable {
     @Max(50)
     int maxAttempts() default 3;
 
-    Class<? extends Exception>[] include() default {RuntimeException.class};
+    Class<? extends Exception>[] include() default {Exception.class};
 
     @Min(0)
     @Max(600000)
