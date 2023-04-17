@@ -19,4 +19,6 @@ public @interface Retryable {
     @Min(0)
     @Max(600000)
     int backoff() default 0;
+
+    boolean printStackTrace() default false;
 }
