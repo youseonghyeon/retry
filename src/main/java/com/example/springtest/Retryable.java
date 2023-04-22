@@ -16,6 +16,8 @@ public @interface Retryable {
 
     Class<? extends Exception>[] include() default {Exception.class};
 
+    Class<? extends Exception>[] exclude() default {};
+
     @Min(0)
     @Max(600000)
     int backoff() default 0;
